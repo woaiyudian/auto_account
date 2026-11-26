@@ -35,13 +35,6 @@ jobs:
           dpkg -l | grep -E "autoconf-archive|libtool-bin" || echo "Packages not installed"
           java -version
 
-      - name: Clean previous build artifacts
-        if: always()
-        run: |
-          echo "=== Cleaning previous build ==="
-          rm -rf .buildozer
-          mkdir -p .buildozer
-
       - name: Install buildozer
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -53,9 +46,16 @@ jobs:
           path: |
             ~/.buildozer
             ~/.cache/pip
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          key: buildozer-v2-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
-            buildozer-${{ runner.os }}-
+            buildozer-v2-${{ runner.os }}-
+
+      - name: Clean previous build artifacts
+        if: always()
+        run: |
+          echo "=== Cleaning previous build ==="
+          rm -rf .buildozer
+          mkdir -p .buildozer
 
       - name: Build Android debug
         run: |
