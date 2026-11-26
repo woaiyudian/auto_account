@@ -44,9 +44,9 @@ jobs:
           restore-keys: |
             buildozer-${{ runner.os }}-
 
-      - name: Build APK
+      - name: Build Android debug
         run: |
-          buildozer -v android release 2>&1 | tee build.log
+          buildozer -v android debug 2>&1 | tee build.log
           ls -lh bin/ || true
 
       - name: Patch accessibility + notification services into the package
