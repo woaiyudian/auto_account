@@ -64,7 +64,7 @@ public final class TransactionParser {
             "中国银行", "工商银行", "招商银行", "建设银行", "农业银行", "交通银行"
     };
 
-    private static final String[][] CATEGORY_KEYWORDS = {
+    private static final Object[][] CATEGORY_KEYWORDS = {
             {"food", new String[]{"餐", "饭", "吃", "外卖", "美团", "饿了么", "肯德基", "麦当劳",
                     "星巴克", "咖啡", "奶茶", "食堂", "烧烤", "火锅"}},
             {"transport", new String[]{"打车", "滴滴", "高德", "地铁", "公交", "火车", "飞机",
@@ -207,10 +207,12 @@ public final class TransactionParser {
     }
 
     private static String detectCategory(String text) {
-        for (String[] entry : CATEGORY_KEYWORDS) {
-            for (String kw : entry[1]) {
+        for (Object[] entry : CATEGORY_KEYWORDS) {
+            String category = (String) entry[0];
+            String[] keywords = (String[]) entry[1];
+            for (String kw : keywords) {
                 if (text.contains(kw)) {
-                    return entry[0];
+                    return category;
                 }
             }
         }
