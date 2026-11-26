@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_name">全自动记账无障碍服务</string>
+    <string name="accessibility_service_summary">识别支付宝/微信等支付页面的金额与商户，弹窗确认后自动记账</string>
+    <string name="accessibility_service_description">开启后，全自动记账本可以在你打开支付宝、微信、银行等应用的支付或收款页面时，读取页面文字识别金额与商户，先弹窗让你确认，确认后才写入账本。不会上传任何屏幕内容。</string>
+    <string name="notification_service_name">全自动记账通知监听</string>
+</resources>

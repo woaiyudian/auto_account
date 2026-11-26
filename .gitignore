@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.buildozer/
+bin/
+data/
+tmp/
+*.db
+*.db-wal
+*.db-shm
+.venv/
+venv/

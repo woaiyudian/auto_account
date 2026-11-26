@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Snippets merged into the <application> element of the generated AndroidManifest.xml.
+  The accessibility service is what enables fully-automatic capture of payment
+  screens (Alipay / WeChat / banking apps).
+-->
+<service
+    android:name="com.autoaccount.AutoAccountAccessibilityService"
+    android:label="@string/accessibility_service_name"
+    android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.accessibilityservice.AccessibilityService" />
+    </intent-filter>
+    <meta-data
+        android:name="android.accessibilityservice"
+        android:resource="@xml/accessibility_service_config" />
+</service>
+
+<!-- 主通道：微信/支付宝支付成功后的通知，文本明文，最稳 -->
+<service
+    android:name="com.autoaccount.AutoAccountNotificationService"
+    android:label="@string/notification_service_name"
+    android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.service.notification.NotificationListenerService" />
+    </intent-filter>
+</service>
+
+<receiver
+    android:name="com.autoaccount.TransactionBroadcastReceiver"
+    android:exported="false">
+    <intent-filter>
+        <action android:name="com.autoaccount.TRANSACTION_DETECTED" />
+    </intent-filter>
+</receiver>
+
+<receiver
+    android:name="com.autoaccount.BootReceiver"
+    android:exported="true"
+    android:enabled="true">
+    <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+    </intent-filter>
+</receiver>

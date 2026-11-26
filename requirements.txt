@@ -1,0 +1,5 @@
+kivy==2.3.2
+# sqlite3 / csv / datetime 均为标准库
+# Android 打包依赖（仅 buildozer 环境需要）
+# buildozer
+# cython

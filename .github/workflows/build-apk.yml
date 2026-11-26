@@ -1,0 +1,41 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build signed APK (buildozer + accessibility patch + rebuild)
+        run: |
+          docker run --rm \
+            -v "$PWD":/home/user/hostcwd \
+            -w /home/user/hostcwd \
+            kivy/buildozer:latest \
+            bash -lc "set -e
+              yes | sdkmanager --licenses > /dev/null 2>&1 || true
+              buildozer android release
+              python3 scripts/patch_android.py
+              buildozer android release
+            "
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p out
+          cp -v bin/*.apk out/ 2>/dev/null || true
+          ls -lh out || true
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: autoaccount-apk
+          path: out/*.apk
+          if-no-files-found: error
+          retention-days: 30

