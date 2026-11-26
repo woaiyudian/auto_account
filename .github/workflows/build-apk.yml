@@ -46,8 +46,21 @@ jobs:
 
       - name: Build Android debug
         run: |
+          set -o pipefail
           buildozer -v android debug 2>&1 | tee build.log
+          echo "buildozer exit code: ${PIPESTATUS[0]}"
+          test ${PIPESTATUS[0]} -eq 0
           ls -lh bin/ || true
+
+      - name: Debug dist directory
+        if: always()
+        run: |
+          echo "=== .buildozer tree ==="
+          find .buildozer -maxdepth 4 -type d 2>/dev/null | head -50
+          echo "=== AndroidManifest.xml locations ==="
+          find .buildozer -name AndroidManifest.xml 2>/dev/null
+          echo "=== bin/ ==="
+          ls -lh bin/ 2>/dev/null || echo "bin/ not found"
 
       - name: Patch accessibility + notification services into the package
         run: |
