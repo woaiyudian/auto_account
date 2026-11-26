@@ -22,12 +22,25 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
+          echo "=== Installing system dependencies ==="
           sudo apt-get install -y --no-install-recommends \
             git zip unzip openjdk-17-jdk autoconf automake libtool \
             pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev \
             libtinfo6 cmake libffi-dev libssl-dev liblzma-dev \
             patch ccache autoconf-archive libtool-bin
+          echo "=== Verifying package installation ==="
+          which autoconf || echo "autoconf not found"
+          which libtool || echo "libtool not found"
+          which autoreconf || echo "autoreconf not found"
+          dpkg -l | grep -E "autoconf-archive|libtool-bin" || echo "Packages not installed"
           java -version
+
+      - name: Clean previous build artifacts
+        if: always()
+        run: |
+          echo "=== Cleaning previous build ==="
+          rm -rf .buildozer
+          mkdir -p .buildozer
 
       - name: Install buildozer
         run: |
@@ -50,12 +63,15 @@ jobs:
           export JAVA_HOME=$JAVA_HOME_11_X64
           echo "JAVA_HOME=$JAVA_HOME"
           java -version
+          echo "=== Verifying buildozer installation ==="
+          which buildozer || echo "buildozer not found"
+          echo "=== Starting build process ==="
           set -o pipefail
           buildozer -v android debug 2>&1 | tee build.log
           BUILDOZER_EXIT=${PIPESTATUS[0]}
           echo "buildozer exit code: $BUILDOZER_EXIT"
-          echo "=== build.log (last 80 lines) ==="
-          tail -80 build.log
+          echo "=== build.log (full output) ==="
+          cat build.log
           ls -lh bin/ 2>/dev/null || echo "bin/ not found yet"
           test $BUILDOZER_EXIT -eq 0
 
