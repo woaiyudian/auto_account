@@ -20,8 +20,9 @@ jobs:
             -v "$PWD":/home/user/hostcwd \
             -w /home/user/hostcwd \
             -e JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 \
+            -e PATH=/usr/lib/jvm/java-11-openjdk-amd64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             kivy/buildozer:latest \
-            android debug
+            bash -lc 'apt-get update && apt-get install -y openjdk-11-jdk && export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && javac -version && buildozer android debug'
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
