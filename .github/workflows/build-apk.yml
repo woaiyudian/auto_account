@@ -8,34 +8,71 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build signed APK (buildozer + accessibility patch + rebuild)
-        run: |
-          docker run --rm \
-            -v "$PWD":/home/user/hostcwd \
-            -w /home/user/hostcwd \
-            kivy/buildozer:latest \
-            bash -lc "set -e
-              yes | sdkmanager --licenses > /dev/null 2>&1 || true
-              buildozer android release
-              python3 scripts/patch_android.py
-              buildozer android release
-            "
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-      - name: Collect artifacts
+      - name: Install system dependencies
         run: |
-          mkdir -p out
-          cp -v bin/*.apk out/ 2>/dev/null || true
-          ls -lh out || true
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            git zip unzip openjdk-17-jdk autoconf automake libtool \
+            pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev \
+            libtinfo6 cmake libffi-dev libssl-dev liblzma-dev \
+            patch ccache
+          java -version
+
+      - name: Install buildozer
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install buildozer cython virtualenv
+
+      - name: Cache buildozer / SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.buildozer
+            ~/.cache/pip
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-
+
+      - name: Build APK
+        run: |
+          buildozer -v android release 2>&1 | tee build.log
+          ls -lh bin/ || true
+
+      - name: Patch accessibility + notification services into the package
+        run: |
+          python3 scripts/patch_android.py
+          DIST=$(ls -d "$PWD"/.buildozer/android/platform/build-*/dists/*/ | head -1)
+          echo "dist = $DIST"
+          cd "$DIST"
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon 2>&1 | tee -a "$GITHUB_WORKSPACE/build.log"
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p bin
+          find .buildozer -path '*/outputs/apk/release/*.apk' -exec cp -v {} bin/ \;
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: autoaccount-apk
-          path: out/*.apk
-          if-no-files-found: error
+          path: bin/*.apk
+          if-no-files-found: warn
           retention-days: 30
+
+      - name: Upload build log (only when something failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: warn

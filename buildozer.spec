@@ -23,6 +23,8 @@ android.archs = arm64-v8a,armeabi-v7a
 android.private_storage = True
 android.enable_androidx = True
 android.allow_backup = True
+# 首次构建时自动接受 SDK 许可，否则 CI 里会卡住
+android.accept_sdk_license = True
 
 # Java sources for the accessibility service / receivers
 android.add_src = android/src
