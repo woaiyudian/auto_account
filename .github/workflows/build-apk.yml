@@ -8,21 +8,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with kivy/buildozer Docker
+      - name: Inspect buildozer image
         run: |
-          docker run --rm \
+          docker pull kivy/buildozer:latest
+          docker inspect --format 'Entrypoint={{.Config.Entrypoint}} Cmd={{.Config.Cmd}} User={{.Config.User}} WorkDir={{.Config.WorkingDir}}' kivy/buildozer:latest
+
+      - name: Build APK
+        run: |
+          docker run --rm --user 0:0 \
+            --entrypoint /bin/bash \
             -v "$PWD":/home/user/hostcwd \
             -w /home/user/hostcwd \
-            -e JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 \
-            -e PATH=/usr/lib/jvm/java-11-openjdk-amd64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             kivy/buildozer:latest \
-            bash -lc 'apt-get update && apt-get install -y openjdk-11-jdk && export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && javac -version && buildozer android debug'
+            -c 'set -e
+                echo "=== java ==="; java -version || true
+                echo "=== buildozer ==="; buildozer --version
+                echo "=== build start ==="
+                buildozer -v android debug'
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
