@@ -50,6 +50,7 @@ jobs:
           buildozer -v android debug 2>&1 | tee build.log
           echo "buildozer exit code: ${PIPESTATUS[0]}"
           test ${PIPESTATUS[0]} -eq 0
+          cat build.log
           ls -lh bin/ || true
 
       - name: Debug dist directory
