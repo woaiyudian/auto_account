@@ -26,6 +26,26 @@ public class PythonCallbackHandler {
         callback = null;
     }
 
+    /**
+     * 供广播接收器在进程内把识别结果交给 Python 层。
+     * 接收器不能直接访问私有字段 callback，统一走这个入口。
+     */
+    public static void notifyPython(double amount, String type, String merchant,
+                                    String category, String packageName,
+                                    String rawText, long timestamp, String channel) {
+        TransactionCallback cb = callback;
+        if (cb == null) {
+            return;
+        }
+        try {
+            cb.onTransactionDetected(
+                    amount, type, merchant, category,
+                    packageName, rawText, timestamp, channel);
+        } catch (Exception ignored) {
+            // Python side may be shutting down; the broadcast covers that case.
+        }
+    }
+
     static void deliver(TransactionParser.TransactionInfo info) {
         TransactionCallback cb = callback;
         if (cb == null) {

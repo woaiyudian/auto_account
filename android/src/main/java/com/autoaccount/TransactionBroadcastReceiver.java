@@ -23,12 +23,10 @@ public class TransactionBroadcastReceiver extends BroadcastReceiver {
 
             Log.d(TAG, "Received transaction: " + amount + " " + type + " from " + packageName);
 
-            // Send to Python via callback
-            if (PythonCallbackHandler.callback != null) {
-                PythonCallbackHandler.callback.onTransactionDetected(
-                    amount, type, merchant, category, packageName, rawText, timestamp
-                );
-            }
+            // Send to Python via callback（统一走公开入口）
+            PythonCallbackHandler.notifyPython(
+                    amount, type, merchant, category, packageName, rawText, timestamp, "broadcast"
+            );
         }
     }
 }
