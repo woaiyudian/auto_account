@@ -10,7 +10,8 @@ source.exclude_dirs = tests,bin,venv,.venv,__pycache__,.git,.idea,.vscode,data,t
 version = 1.0.0
 
 # kivy only – no extra native deps needed for the core app
-requirements = python3,kivy==2.3.2
+# requests 固定 2.25.1：新版会解析出 charset_normalizer（仅 cp314 安卓编译轮，host venv 装不上）
+requirements = python3,kivy==2.3.2,requests==2.25.1
 
 orientation = portrait
 fullscreen = 0
