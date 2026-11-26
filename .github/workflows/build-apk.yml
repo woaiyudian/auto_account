@@ -48,13 +48,16 @@ jobs:
         run: |
           # GitHub Actions 默认 JAVA_HOME 指向 Java 25，python-for-android 不支持，切到 Java 11
           export JAVA_HOME=$JAVA_HOME_11_X64
+          echo "JAVA_HOME=$JAVA_HOME"
           java -version
           set -o pipefail
           buildozer -v android debug 2>&1 | tee build.log
-          echo "buildozer exit code: ${PIPESTATUS[0]}"
-          test ${PIPESTATUS[0]} -eq 0
-          cat build.log
-          ls -lh bin/ || true
+          BUILDOZER_EXIT=${PIPESTATUS[0]}
+          echo "buildozer exit code: $BUILDOZER_EXIT"
+          echo "=== build.log (last 80 lines) ==="
+          tail -80 build.log
+          ls -lh bin/ 2>/dev/null || echo "bin/ not found yet"
+          test $BUILDOZER_EXIT -eq 0
 
       - name: Debug dist directory
         if: always()
@@ -93,3 +96,4 @@ jobs:
           name: build-log
           path: build.log
           if-no-files-found: warn
+          retention-days: 30
