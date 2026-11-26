@@ -10,8 +10,11 @@ source.exclude_dirs = tests,bin,venv,.venv,__pycache__,.git,.idea,.vscode,data,t
 version = 1.0.0
 
 # kivy only – no extra native deps needed for the core app
-# requests 固定 2.25.1：新版会解析出 charset_normalizer（仅 cp314 安卓编译轮，host venv 装不上）
-requirements = python3,kivy==2.3.2,requests==2.25.1
+# requests 由 p4a 配方自动带入，无需在本声明固定（版本会被解析阶段剥除）
+requirements = python3,kivy==2.3.2
+
+# 使用 CI 工作流里预先克隆并打过补丁的 p4a（跳过 host venv 无法安装的安卓编译轮）
+p4a.source_dir = p4a-local
 
 orientation = portrait
 fullscreen = 0

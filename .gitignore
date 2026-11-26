@@ -10,3 +10,4 @@ tmp/
 *.db-shm
 .venv/
 venv/
+p4a-local/

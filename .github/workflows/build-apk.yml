@@ -35,6 +35,12 @@ jobs:
           python -m pip install "cython>=3.0" buildozer virtualenv
           buildozer --version
 
+      - name: Prepare patched python-for-android
+        run: |
+          rm -rf p4a-local
+          git clone --depth 1 -b master https://github.com/kivy/python-for-android.git p4a-local
+          python scripts/patch_p4a.py p4a-local/pythonforandroid/build.py
+
       - name: Cache buildozer / SDK / NDK
         uses: actions/cache@v4
         with:
