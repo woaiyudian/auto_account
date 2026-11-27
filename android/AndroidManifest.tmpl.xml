@@ -43,51 +43,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Accessibility Service: reads payment screens -->
-        <service
-            android:name="com.autoaccount.AutoAccountAccessibilityService"
-            android:label="@string/accessibility_service_name"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
-
-        <!-- Notification listener: primary channel for WeChat / Alipay amounts -->
-        <service
-            android:name="com.autoaccount.AutoAccountNotificationService"
-            android:label="@string/notification_service_name"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
-            </intent-filter>
-        </service>
-
-        <!-- Broadcast Receiver for transaction detection -->
-        <receiver
-            android:name="com.autoaccount.TransactionBroadcastReceiver"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="com.autoaccount.TRANSACTION_DETECTED" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Boot receiver to restart service -->
-        <receiver
-            android:name="com.autoaccount.BootReceiver"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
+        <!-- Services & receivers are injected by patch_p4a.py from extra_application.xml -->
 
         <provider
             android:name="androidx.core.content.FileProvider"

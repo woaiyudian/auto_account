@@ -41,13 +41,18 @@ def patch_build_py(target: Path) -> None:
 def patch_manifest_template(template: Path, fragment: Path) -> None:
     text = template.read_text(encoding="utf-8")
 
-    # 幂等：已经注入过就不再重复插入
-    if "com.autoaccount" in text:
+    # 幂等：已经注入过就不再重复插入（检查是否已有 service 声明）
+    if 'android:name="com.autoaccount.AutoAccountAccessibilityService"' in text:
         print(f"[patch] {template.name} 已包含自定义服务/广播，跳过注入")
         return
 
-    anchor = 'android:extractNativeLibs="true" >'
-    if anchor not in text:
+    # p4a 模板的 <application> 标签可能有多种写法，找到标签结束位置
+    import re
+    # Find the line containing <application ...>
+    m = re.search(r'<application[^>]*>', text)
+    if m:
+        anchor = m.group(0)
+    else:
         print("[patch] 清单模板里没找到 <application> 开标签锚点，中止以防误改")
         sys.exit(1)
 
@@ -58,12 +63,20 @@ def patch_manifest_template(template: Path, fragment: Path) -> None:
     injected = ["    " + line if line.strip() else "" for line in fragment_lines]
 
     lines = text.splitlines(keepends=True)
-    for index, line in enumerate(lines):
-        if anchor in line:
-            lines[index + 1:index + 1] = ["\n"] + [
-                l + "\n" for l in injected
-            ]
-            break
+    # Find the line index where the anchor ends (the line containing the closing >)
+    anchor_lines = anchor.splitlines()
+    if len(anchor_lines) == 1:
+        # Single line anchor
+        for index, line in enumerate(lines):
+            if anchor in line:
+                lines[index + 1:index + 1] = ["\n"] + [l + "\n" for l in injected]
+                break
+    else:
+        # Multi-line anchor: find the line containing the closing >
+        for index, line in enumerate(lines):
+            if anchor_lines[-1].strip() in line.strip() and line.strip().endswith('>'):
+                lines[index + 1:index + 1] = ["\n"] + [l + "\n" for l in injected]
+                break
 
     template.write_text("".join(lines), encoding="utf-8")
     print(f"[patch] 已把服务/广播注入 {template}")

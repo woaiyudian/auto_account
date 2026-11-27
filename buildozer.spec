@@ -38,8 +38,6 @@ android.accept_sdk_license = True
 android.add_src = android/src/main/java
 
 # Extra XML merged directly under <manifest>（如 <queries>）。
-# 注意：p4a 模板里没有在 <application> 内部放置自定义 service/receiver 的槽位，
-# 因此自定义服务/广播先不写进清单，等主包能出 APK 后再用其他方式接入。
 android.extra_manifest_xml = android/res/extra_manifest.xml
 
 # App resources: 服务名称等字符串；无障碍配置 xml
