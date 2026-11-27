@@ -39,7 +39,10 @@ jobs:
         run: |
           rm -rf p4a-local
           git clone --depth 1 -b master https://github.com/kivy/python-for-android.git p4a-local
-          python scripts/patch_p4a.py p4a-local/pythonforandroid/build.py
+          python scripts/patch_p4a.py \
+            p4a-local/pythonforandroid/build.py \
+            p4a-local/pythonforandroid/bootstraps/_sdl_common/build/templates/AndroidManifest.tmpl.xml \
+            android/res/extra_application.xml
 
       - name: Cache buildozer / SDK / NDK
         uses: actions/cache@v4
