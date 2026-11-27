@@ -44,6 +44,13 @@ jobs:
             p4a-local/pythonforandroid/bootstraps/_sdl_common/build/templates/AndroidManifest.tmpl.xml \
             android/res/extra_application.xml
 
+      - name: Ensure SDK platform 34
+        run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
       - name: Cache buildozer / SDK / NDK
         uses: actions/cache@v4
         with:
