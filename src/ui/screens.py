@@ -766,8 +766,28 @@ class SettingsScreen(BaseScreen):
         self.scroll, self.column = scroll_column()
         self.content.add_widget(self.scroll)
 
+        # 状态标签引用，供定时刷新授权状态时更新文本
+        self._notif_label = None
+        self._acc_label = None
+        self._status_timer = None
+
     def on_pre_enter(self, *args):
         self.refresh()
+        # 停留在本页时定时重新读取授权状态；从系统设置返回后能自动跟上
+        if self._status_timer is None:
+            self._status_timer = Clock.schedule_interval(
+                self._update_status_labels, 2)
+
+    def on_leave(self, *args):
+        if self._status_timer is not None:
+            self._status_timer.cancel()
+            self._status_timer = None
+
+    def _update_status_labels(self, *_):
+        if self._notif_label is not None:
+            self._notif_label.text = self._notification_status()
+        if self._acc_label is not None:
+            self._acc_label.text = self._accessibility_status()
 
     def refresh(self):
         self.column.clear_widgets()
@@ -826,8 +846,9 @@ class SettingsScreen(BaseScreen):
                                height=dp(104), padding=dp(12), spacing=dp(4))
         notif_box.add_widget(AppLabel(text="通知监听（推荐，微信/支付宝）",
                                       bold=True, font_size=sp(14)))
-        notif_box.add_widget(AppLabel(text=self._notification_status(),
-                                      font_size=sp(12), color=TEXT_MUTED))
+        self._notif_label = AppLabel(text=self._notification_status(),
+                                      font_size=sp(12), color=TEXT_MUTED)
+        notif_box.add_widget(self._notif_label)
         notif_btn = AppButton(text="打开通知使用权设置", bg_color=PRIMARY,
                               height=dp(38), font_size=sp(13))
         notif_btn.bind(on_press=lambda *_: self._open_notification())
@@ -838,8 +859,9 @@ class SettingsScreen(BaseScreen):
                              height=dp(104), padding=dp(12), spacing=dp(4))
         acc_box.add_widget(AppLabel(text="无障碍读屏（补充商户/分类）",
                                     bold=True, font_size=sp(14)))
-        acc_box.add_widget(AppLabel(text=self._accessibility_status(),
-                                    font_size=sp(12), color=TEXT_MUTED))
+        self._acc_label = AppLabel(text=self._accessibility_status(),
+                                    font_size=sp(12), color=TEXT_MUTED)
+        acc_box.add_widget(self._acc_label)
         open_btn = AppButton(text="打开无障碍设置", bg_color=PRIMARY, height=dp(38),
                              font_size=sp(13))
         open_btn.bind(on_press=lambda *_: self._open_accessibility())
