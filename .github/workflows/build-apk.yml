@@ -66,6 +66,11 @@ jobs:
           set -o pipefail
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
           export PATH=$JAVA_HOME/bin:$PATH
+          # 复用 CI 镜像自带 SDK（含 android-34 平台）；
+          # buildozer 已忽略 spec 里的 android.sdk，必须用环境变量传给 p4a。
+          export ANDROIDSDK=/usr/local/lib/android/sdk
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           # 清掉上一轮缓存的旧分发，强制按打过补丁的清单模板重新生成引导，
           # 但保留 build/ 下已编译好的原生依赖，避免整包重编。
           rm -rf .buildozer/android/platform/build-*/dists

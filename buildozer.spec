@@ -23,9 +23,9 @@ android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE,READ_
 android.api = 34
 android.minapi = 24
 android.ndk_api = 24
-# 复用 CI 镜像自带的 Android SDK（已含 android-34 平台与 build-tools），
-# 避免冷启动时 buildozer 自建 SDK 缺平台而在 API 检查阶段失败。
-android.sdk = /usr/local/lib/android/sdk
+# 复用 CI 镜像自带的 Android SDK（已含 android-34 平台与 build-tools）。
+# 注意：buildozer 里 android.sdk 已废弃，必须用 android.sdk_path 才生效。
+android.sdk_path = /usr/local/lib/android/sdk
 # 个人自用先只编 arm64-v8a，把首遍编译时间砍掉一半
 android.archs = arm64-v8a
 android.enable_androidx = True
