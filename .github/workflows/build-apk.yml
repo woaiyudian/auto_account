@@ -47,6 +47,10 @@ jobs:
       - name: Ensure SDK platform 34
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
+          # buildozer 只认旧版 tools/bin/sdkmanager 路径，镜像 SDK 是新版
+          # cmdline-tools/latest 布局，把 tools 软链到该目录做兼容。
+          rm -rf "$ANDROID_HOME/tools"
+          ln -sfn cmdline-tools/latest "$ANDROID_HOME/tools"
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
