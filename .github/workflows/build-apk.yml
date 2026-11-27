@@ -66,6 +66,9 @@ jobs:
           set -o pipefail
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
           export PATH=$JAVA_HOME/bin:$PATH
+          # 清掉上一轮缓存的旧分发，强制按打过补丁的清单模板重新生成引导，
+          # 但保留 build/ 下已编译好的原生依赖，避免整包重编。
+          rm -rf .buildozer/android/platform/build-*/dists
           buildozer -v android debug 2>&1 | tee build.log
 
       - name: Upload APK
